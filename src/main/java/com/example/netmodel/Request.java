@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class Request {
     private String command;
-    private String data;
+    private String jsonData;
 }
