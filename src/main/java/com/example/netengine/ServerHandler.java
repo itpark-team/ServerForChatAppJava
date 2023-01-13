@@ -5,12 +5,16 @@ import com.example.netmodel.Response;
 import com.example.service.Service;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 
 public class ServerHandler extends Thread {
+    private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
+
     private Socket socket;
 
     private DataInputStream dataInputStream;
@@ -37,10 +41,14 @@ public class ServerHandler extends Thread {
             String requestAsJson = getRequest();
             Request request = fromJsonToRequest(requestAsJson);
 
+            logger.info(String.format("from client %s:%s get request: %s", socket.getInetAddress(), socket.getPort(), request));
+
             Response response = service.processRequest(request);
 
             String responseAsJson = fromResponseToJson(response);
             sendResponse(responseAsJson);
+
+            logger.info(String.format("to client %s:%s send response: %s", socket.getInetAddress(), socket.getPort(), response));
         }
     }
 
