@@ -2,7 +2,7 @@ package com.example.netengine;
 
 import com.example.netmodel.Request;
 import com.example.netmodel.Response;
-import com.example.service.Service;
+import com.example.service.ServiceManager;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -20,13 +20,13 @@ public class ServerHandler extends Thread {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
 
-    private Service service;
+    private ServiceManager serviceManager;
 
     private Gson gson;
 
-    public ServerHandler(Socket socket, Service service) throws Exception {
+    public ServerHandler(Socket socket, ServiceManager serviceManager) throws Exception {
         this.socket = socket;
-        this.service = service;
+        this.serviceManager = serviceManager;
 
         this.dataInputStream = new DataInputStream(this.socket.getInputStream());
         this.dataOutputStream = new DataOutputStream(this.socket.getOutputStream());
@@ -43,7 +43,7 @@ public class ServerHandler extends Thread {
 
             logger.info(String.format("from client %s:%s get request: %s", socket.getInetAddress(), socket.getPort(), request));
 
-            Response response = service.processRequest(request);
+            Response response = serviceManager.processRequest(request);
 
             String responseAsJson = fromResponseToJson(response);
             sendResponse(responseAsJson);

@@ -1,7 +1,7 @@
 package com.example.netengine;
 
-import com.example.service.Service;
-import com.example.service.ServiceImpl;
+import com.example.service.ServiceManager;
+import com.example.service.ServiceManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +13,11 @@ public class ServerListener {
 
     private ServerSocket serverSocket;
 
-    private Service service;
+    private ServiceManager serviceManager;
 
     public ServerListener(int port) throws Exception {
         serverSocket = new ServerSocket(port);
-        service = new ServiceImpl();
+        serviceManager = new ServiceManagerImpl();
 
         logger.info(String.format("server started on %s:%s", serverSocket.getInetAddress(), serverSocket.getLocalPort()));
     }
@@ -27,7 +27,7 @@ public class ServerListener {
             Socket socket = serverSocket.accept();
             logger.info(String.format("client connected from %s:%s", socket.getInetAddress(), socket.getPort()));
 
-            ServerHandler serverHandler = new ServerHandler(socket, service);
+            ServerHandler serverHandler = new ServerHandler(socket, serviceManager);
             serverHandler.start();
         }
     }
