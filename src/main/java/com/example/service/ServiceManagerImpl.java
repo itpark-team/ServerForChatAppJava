@@ -6,6 +6,7 @@ import com.example.dao.UsersDao;
 import com.example.dao.UsersDaoImpl;
 import com.example.daoutil.DbManager;
 import com.example.daoutil.HibernateSession;
+import com.example.netengine.NetCommands;
 import com.example.netmodel.Request;
 import com.example.netmodel.Response;
 import com.example.service.services.MessagesService;
@@ -22,7 +23,8 @@ public class ServiceManagerImpl implements ServiceManager {
     private DbManager dbManager;
 
     public ServiceManagerImpl() {
-        SessionFactory sessionFactory = new HibernateSession().getSessionFactory();
+        HibernateSession hibernateSession = new HibernateSession();
+        SessionFactory sessionFactory = hibernateSession.getSessionFactory();
 
         UsersDao usersDao = new UsersDaoImpl(sessionFactory);
         MessagesDao messagesDao = new MessagesDaoImpl(sessionFactory);
@@ -34,7 +36,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
         methods = new HashMap<>();
 
-        methods.put("empty", messagesService::processEmpty);
+        methods.put(NetCommands.AUTH_USER, usersService::processAuthUser);
     }
 
     @Override

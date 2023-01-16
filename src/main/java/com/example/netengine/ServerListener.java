@@ -24,10 +24,10 @@ public class ServerListener {
 
     public void start() throws Exception {
         while (true) {
-            Socket socket = serverSocket.accept();
-            logger.info(String.format("client connected from %s:%s", socket.getInetAddress(), socket.getPort()));
+            Socket clientSocket = serverSocket.accept();
+            logger.info(String.format("client connected from %s:%s", clientSocket.getInetAddress(), clientSocket.getPort()));
 
-            ServerHandler serverHandler = new ServerHandler(socket, serviceManager);
+            ServerHandler serverHandler = new ServerHandler(clientSocket, serviceManager);
             serverHandler.start();
         }
     }

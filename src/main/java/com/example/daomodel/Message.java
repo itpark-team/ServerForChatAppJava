@@ -23,12 +23,12 @@ public class Message {
     private User fromUser;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "from_user_id")
+    @JoinColumn(name = "to_user_id")
     private User toUser;
 
     @Column(name = "text")
     private String text;
 
     @Column(name = "is_opened")
-    private Boolean isOpened;
+    private boolean isOpened;
 }

@@ -15,7 +15,7 @@ import java.net.Socket;
 public class ServerHandler extends Thread {
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
-    private Socket socket;
+    private Socket clientSocket;
 
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
@@ -24,12 +24,12 @@ public class ServerHandler extends Thread {
 
     private Gson gson;
 
-    public ServerHandler(Socket socket, ServiceManager serviceManager) throws Exception {
-        this.socket = socket;
+    public ServerHandler(Socket clientSocket, ServiceManager serviceManager) throws Exception {
+        this.clientSocket = clientSocket;
         this.serviceManager = serviceManager;
 
-        this.dataInputStream = new DataInputStream(this.socket.getInputStream());
-        this.dataOutputStream = new DataOutputStream(this.socket.getOutputStream());
+        this.dataInputStream = new DataInputStream(this.clientSocket.getInputStream());
+        this.dataOutputStream = new DataOutputStream(this.clientSocket.getOutputStream());
 
         this.gson = new Gson();
     }
@@ -41,14 +41,14 @@ public class ServerHandler extends Thread {
             String requestAsJson = getRequest();
             Request request = fromJsonToRequest(requestAsJson);
 
-            logger.info(String.format("from client %s:%s get request: %s", socket.getInetAddress(), socket.getPort(), request));
+            logger.info(String.format("from client %s:%s get request: %s", clientSocket.getInetAddress(), clientSocket.getPort(), request));
 
             Response response = serviceManager.processRequest(request);
 
             String responseAsJson = fromResponseToJson(response);
             sendResponse(responseAsJson);
 
-            logger.info(String.format("to client %s:%s send response: %s", socket.getInetAddress(), socket.getPort(), response));
+            logger.info(String.format("to client %s:%s send response: %s", clientSocket.getInetAddress(), clientSocket.getPort(), response));
         }
     }
 

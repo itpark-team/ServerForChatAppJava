@@ -28,5 +28,5 @@ public class User {
     private String password;
 
     @Column(name = "is_online")
-    private Boolean isOnline;
+    private boolean isOnline;
 }

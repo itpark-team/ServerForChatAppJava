@@ -22,12 +22,13 @@ public class UsersDaoImpl implements UsersDao {
 
         List<User> users = (List<User>) query.getResultList();
 
-        if (users == null) {
+        if (users.size() == 0) {
             throw new Exception(String.format("User with login=%s and password=%s not found", login, password));
         }
 
         return users.get(0);
     }
+
 
     @Override
     public User registerNewUser(User user) {
@@ -50,5 +51,37 @@ public class UsersDaoImpl implements UsersDao {
         List<User> users = (List<User>) query.getResultList();
 
         return users != null;
+    }
+
+    @Override
+    public void setUserIsOnline(User user) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        Query query = session.createQuery("update User set isOnline = :isOnline where id = :id");
+
+        query.setParameter("isOnline", true);
+        query.setParameter("id", user.getId());
+
+        query.executeUpdate();
+
+        transaction.commit();
+        session.close();
+    }
+
+    @Override
+    public void setUserIsOffline(User user) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        Query query = session.createQuery("update User set isOnline = :isOnline where id = :id");
+
+        query.setParameter("isOnline", false);
+        query.setParameter("id", user.getId());
+
+        query.executeUpdate();
+
+        transaction.commit();
+        session.close();
     }
 }

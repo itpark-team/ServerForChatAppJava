@@ -8,4 +8,9 @@ public interface UsersDao {
     User registerNewUser(User user);
 
     boolean isContainLogin(String login);
+
+    void setUserIsOnline(User user);
+
+    void setUserIsOffline(User user);
+
 }
