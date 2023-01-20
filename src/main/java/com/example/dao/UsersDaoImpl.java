@@ -23,7 +23,7 @@ public class UsersDaoImpl implements UsersDao {
         List<User> users = (List<User>) query.getResultList();
 
         if (users.size() == 0) {
-            throw new Exception(String.format("User with login=%s and password=%s not found", login, password));
+            throw new Exception(String.format("Пользователь с логином=%s и паролем=%s не найден", login, password));
         }
 
         return users.get(0);
@@ -31,7 +31,7 @@ public class UsersDaoImpl implements UsersDao {
 
 
     @Override
-    public User registerNewUser(User user) {
+    public void registerNewUser(User user) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -39,8 +39,6 @@ public class UsersDaoImpl implements UsersDao {
 
         transaction.commit();
         session.close();
-
-        return user;
     }
 
     @Override
@@ -50,7 +48,7 @@ public class UsersDaoImpl implements UsersDao {
 
         List<User> users = (List<User>) query.getResultList();
 
-        return users != null;
+        return users.size() != 0;
     }
 
     @Override

@@ -37,6 +37,7 @@ public class ServiceManagerImpl implements ServiceManager {
         methods = new HashMap<>();
 
         methods.put(NetCommands.AUTH_USER, usersService::processAuthUser);
+        methods.put(NetCommands.REGISTER_USER, usersService::processRegisterUser);
     }
 
     @Override
