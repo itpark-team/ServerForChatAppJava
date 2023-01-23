@@ -29,6 +29,21 @@ public class UsersDaoImpl implements UsersDao {
         return users.get(0);
     }
 
+    @Override
+    public List<User> getAllUsersWithoutMe(User user) throws Exception {
+        Query query = sessionFactory.openSession().createQuery("FROM User WHERE id<>:id ORDER BY id");
+        query.setParameter("id", user.getId());
+
+        List<User> users = (List<User>) query.getResultList();
+
+        return users;
+    }
+
+    @Override
+    public User getUserById(long id) {
+        return sessionFactory.openSession().get(User.class, id);
+    }
+
 
     @Override
     public void registerNewUser(User user) {

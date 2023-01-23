@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 public class ServerHandler extends Thread {
@@ -37,7 +38,8 @@ public class ServerHandler extends Thread {
     @SneakyThrows
     @Override
     public void run() {
-        while (true) {
+        boolean isChatting = true;
+        while (isChatting) {
             String requestAsJson = getRequest();
             Request request = fromJsonToRequest(requestAsJson);
 
@@ -49,7 +51,15 @@ public class ServerHandler extends Thread {
             sendResponse(responseAsJson);
 
             logger.info(String.format("to client %s:%s send response: %s", clientSocket.getInetAddress(), clientSocket.getPort(), response));
+
+            if (request.getCommand().equals(NetCommands.DISCONNECT_USER)) {
+                isChatting = false;
+            }
         }
+
+        logger.info(String.format("client %s:%s disconnected", clientSocket.getInetAddress(), clientSocket.getPort()));
+
+        closeConnection();
     }
 
     private String getRequest() throws Exception {
@@ -67,6 +77,13 @@ public class ServerHandler extends Thread {
 
     private String fromResponseToJson(Response response) {
         return gson.toJson(response);
+    }
+
+    private void closeConnection() throws Exception {
+        dataInputStream.close();
+        dataOutputStream.close();
+
+        clientSocket.close();
     }
 
 }

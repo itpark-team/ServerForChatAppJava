@@ -7,6 +7,8 @@ import com.example.netmodel.Response;
 import com.example.netmodel.ServerException;
 import com.google.gson.Gson;
 
+import java.util.List;
+
 public class UsersService {
     private DbManager dbManager;
     private Gson gson;
@@ -63,6 +65,53 @@ public class UsersService {
             return Response.builder()
                     .status(NetStatuses.OK)
                     .jsonData(outputUserJson)
+                    .build();
+
+        } catch (Exception e) {
+            ServerException exception = new ServerException(e.getMessage());
+
+            String exceptionJson = gson.toJson(exception);
+
+            return Response.builder()
+                    .status(NetStatuses.BAD_REQUEST)
+                    .jsonData(exceptionJson)
+                    .build();
+        }
+    }
+
+    public Response processDisconnectUser(String jsonData) throws Exception {
+        User user = gson.fromJson(jsonData, User.class);
+
+        try {
+            dbManager.getUsersDao().setUserIsOffline(user);
+
+            return Response.builder()
+                    .status(NetStatuses.OK)
+                    .build();
+
+        } catch (Exception e) {
+            ServerException exception = new ServerException(e.getMessage());
+
+            String exceptionJson = gson.toJson(exception);
+
+            return Response.builder()
+                    .status(NetStatuses.BAD_REQUEST)
+                    .jsonData(exceptionJson)
+                    .build();
+        }
+    }
+
+    public Response processGetAllUsersWithoutMe(String jsonData) {
+        User user = gson.fromJson(jsonData, User.class);
+
+        try {
+            List<User> users = dbManager.getUsersDao().getAllUsersWithoutMe(user);
+
+            String outputUsersJson = gson.toJson(users);
+
+            return Response.builder()
+                    .status(NetStatuses.OK)
+                    .jsonData(outputUsersJson)
                     .build();
 
         } catch (Exception e) {
