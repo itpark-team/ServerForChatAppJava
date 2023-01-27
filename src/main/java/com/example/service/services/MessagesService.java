@@ -8,6 +8,8 @@ import com.example.netmodel.Response;
 import com.example.netmodel.ServerException;
 import com.google.gson.Gson;
 
+import java.util.List;
+
 public class MessagesService {
     private DbManager dbManager;
     private Gson gson;
@@ -44,6 +46,62 @@ public class MessagesService {
                     .build();
 
         } catch (Exception e) {
+            ServerException exception = new ServerException(e.getMessage());
+
+            String exceptionJson = gson.toJson(exception);
+
+            return Response.builder()
+                    .status(NetStatuses.BAD_REQUEST)
+                    .jsonData(exceptionJson)
+                    .build();
+        }
+    }
+
+    public Response processGetUncheckedMessages(String jsonData) {
+
+        User user = gson.fromJson(jsonData, User.class);
+
+        try {
+            List<Message> uncheckedMessages = dbManager.getMessagesDao().getUncheckedMessages(user);
+
+            //todo как сделать конвертацию json при LAZY загрузке доп сущностей https://stackoverflow.com/questions/13459718/could-not-serialize-object-cause-of-hibernateproxy java.lang.UnsupportedOperationException: Attempted to serialize java.lang.Class: org.hibernate.proxy.HibernateProxy. Forgot to register a type adapter?
+            String outputMessagesJson = gson.toJson(uncheckedMessages);
+
+            return Response.builder()
+                    .status(NetStatuses.OK)
+                    .jsonData(outputMessagesJson)
+                    .build();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            ServerException exception = new ServerException(e.getMessage());
+
+            String exceptionJson = gson.toJson(exception);
+
+            return Response.builder()
+                    .status(NetStatuses.BAD_REQUEST)
+                    .jsonData(exceptionJson)
+                    .build();
+        }
+    }
+
+    public Response processSetMessagesStatusIsOpened(String jsonData){
+
+        User user = gson.fromJson(jsonData, User.class);
+
+        try{
+
+            dbManager.getMessagesDao().setMessagesStatusIsOpened(user);
+
+            return Response.builder()
+                    .status(NetStatuses.OK)
+                    .build();
+        }catch (Exception e){
+
+            e.printStackTrace();
+
             ServerException exception = new ServerException(e.getMessage());
 
             String exceptionJson = gson.toJson(exception);
