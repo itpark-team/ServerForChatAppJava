@@ -1,5 +1,6 @@
 package com.example.service.services;
 
+import com.example.daomodel.Message;
 import com.example.daomodel.User;
 import com.example.daoutil.DbManager;
 import com.example.netengine.NetStatuses;

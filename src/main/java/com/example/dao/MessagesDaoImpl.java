@@ -1,25 +1,1 @@
-package com.example.dao;
-
-import com.example.daomodel.Message;
-import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-
-@AllArgsConstructor
-public class MessagesDaoImpl implements MessagesDao {
-
-    private SessionFactory sessionFactory;
-
-
-    @Override
-    public void addNewMessage(Message message) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.save(message);
-
-        transaction.commit();
-        session.close();
-    }
-}
+package com.example.dao;import com.example.daomodel.Message;import com.example.daomodel.User;import lombok.AllArgsConstructor;import org.hibernate.Session;import org.hibernate.SessionFactory;import org.hibernate.Transaction;import org.hibernate.query.Query;import java.util.List;@AllArgsConstructorpublic class MessagesDaoImpl implements MessagesDao {    private SessionFactory sessionFactory;    @Override    public void addNewMessage(Message message) {        Session session = sessionFactory.openSession();        Transaction transaction = session.beginTransaction();        session.save(message);        transaction.commit();        session.close();    }    public List<Message> getUncheckedMessages(User user) {        Query query = sessionFactory.openSession().createQuery("FROM Message WHERE toUser = :id ORDER BY id");        query.setParameter("id", user.getId());        return (List<Message>) query.getResultList();    }    public void setMessagesStatusIsOpened(User user) {        Session session = sessionFactory.openSession();        Transaction transaction = session.beginTransaction();        Query query = session.createQuery("update Message set isOpened = true where toUser = :id");        query.setParameter("id", user.getId());        query.executeUpdate();        transaction.commit();        session.close();    }}

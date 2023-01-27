@@ -18,4 +18,6 @@ public interface UsersDao {
     List<User> getAllUsersWithoutMe(User user) throws Exception;
 
     User getUserById(long id);
+
+
 }

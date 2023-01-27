@@ -41,6 +41,8 @@ public class ServiceManagerImpl implements ServiceManager {
         methods.put(NetCommands.DISCONNECT_USER, usersService::processDisconnectUser);
         methods.put(NetCommands.GET_ALL_USERS_WITHOUT_ME, usersService::processGetAllUsersWithoutMe);
 
+        methods.put(NetCommands.GET_UNCHECKED_MESSAGES, messagesService::processGetUncheckedMessages);
+        methods.put(NetCommands.SET_MESSAGES_STATUS_IS_OPENED, messagesService::processSetMessagesStatusIsOpened);
         methods.put(NetCommands.ADD_NEW_MESSAGE, messagesService::processAddNewMessage);
     }
 
