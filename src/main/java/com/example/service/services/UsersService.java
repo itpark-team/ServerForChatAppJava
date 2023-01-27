@@ -1,5 +1,6 @@
 package com.example.service.services;
 
+import com.example.daomodel.Message;
 import com.example.daomodel.User;
 import com.example.daoutil.DbManager;
 import com.example.netengine.NetStatuses;
@@ -125,4 +126,30 @@ public class UsersService {
                     .build();
         }
     }
+    //TODO Из JSON в STRING
+    public Response processGetIncomingMessage(String jsonData){
+        User user = new User();
+        Message message = gson.fromJson(jsonData,Message.class);
+        try {
+      List<Message> messages = dbManager.getUsersDao().getAllMessagesNotOpened(message,user);
+
+        String incomingMessageJson = gson.toJson(messages);
+
+        return Response.builder()
+                .status(NetStatuses.OK)
+                .jsonData(incomingMessageJson)
+                .build();
+        } catch (Exception e) {
+            ServerException exception = new ServerException(e.getMessage());
+
+            String exceptionJson = gson.toJson(exception);
+
+            return Response.builder()
+                    .status(NetStatuses.BAD_REQUEST)
+                    .jsonData(exceptionJson)
+                    .build();
+        }
+
+    }
+
 }

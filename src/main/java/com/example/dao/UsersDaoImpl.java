@@ -1,5 +1,6 @@
 package com.example.dao;
 
+import com.example.daomodel.Message;
 import com.example.daomodel.User;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
@@ -42,6 +43,14 @@ public class UsersDaoImpl implements UsersDao {
     @Override
     public User getUserById(long id) {
         return sessionFactory.openSession().get(User.class, id);
+    }
+
+    @Override
+    public List<Message> getAllMessagesNotOpened(Message message, User user) {
+        Query query = sessionFactory.openSession().createQuery("FROM Message WHERE isOpened <> false and fromUser <>:user");
+        List<Message> messages = query.getResultList();
+
+        return messages; //TODO tyt
     }
 
 

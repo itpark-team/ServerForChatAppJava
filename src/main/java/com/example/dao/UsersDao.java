@@ -1,5 +1,6 @@
 package com.example.dao;
 
+import com.example.daomodel.Message;
 import com.example.daomodel.User;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface UsersDao {
     List<User> getAllUsersWithoutMe(User user) throws Exception;
 
     User getUserById(long id);
+
+    List<Message> getAllMessagesNotOpened(Message message, User user);
+
 }

@@ -40,8 +40,11 @@ public class ServiceManagerImpl implements ServiceManager {
         methods.put(NetCommands.REGISTER_USER, usersService::processRegisterUser);
         methods.put(NetCommands.DISCONNECT_USER, usersService::processDisconnectUser);
         methods.put(NetCommands.GET_ALL_USERS_WITHOUT_ME, usersService::processGetAllUsersWithoutMe);
+        methods.put(NetCommands.SHOW_INCOMING_MESSAGES,usersService::processGetIncomingMessage); //TODO METHOD
 
         methods.put(NetCommands.ADD_NEW_MESSAGE, messagesService::processAddNewMessage);
+
+
     }
 
     @Override
