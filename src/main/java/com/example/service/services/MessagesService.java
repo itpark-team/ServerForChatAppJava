@@ -64,6 +64,7 @@ public class MessagesService {
         try {
             List<Message> uncheckedMessages = dbManager.getMessagesDao().getUncheckedMessages(user);
 
+            //todo как сделать конвертацию json при LAZY загрузке доп сущностей https://stackoverflow.com/questions/13459718/could-not-serialize-object-cause-of-hibernateproxy java.lang.UnsupportedOperationException: Attempted to serialize java.lang.Class: org.hibernate.proxy.HibernateProxy. Forgot to register a type adapter?
             String outputMessagesJson = gson.toJson(uncheckedMessages);
 
             return Response.builder()
