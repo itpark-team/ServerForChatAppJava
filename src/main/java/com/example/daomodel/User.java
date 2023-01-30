@@ -19,7 +19,7 @@ public class User {
     private long id;
 
     @Column(name = "nickname")
-    private String name;
+    private String nickname;
 
     @Column(name = "login")
     private String login;

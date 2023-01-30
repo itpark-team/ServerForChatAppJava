@@ -1,34 +1,45 @@
 package com.example.service.services;
 
-import com.example.daomodel.Message;
 import com.example.daomodel.User;
 import com.example.daoutil.DbManager;
+import com.example.dto.user.*;
 import com.example.netengine.NetStatuses;
 import com.example.netmodel.Response;
 import com.example.netmodel.ServerException;
 import com.google.gson.Gson;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UsersService {
     private DbManager dbManager;
     private Gson gson;
+    private ModelMapper modelMapper;
 
     public UsersService(DbManager dbManager) {
         this.dbManager = dbManager;
         this.gson = new Gson();
+        this.modelMapper = new ModelMapper();
     }
 
     public Response processAuthUser(String jsonData) throws Exception {
-        User inputUser = gson.fromJson(jsonData, User.class);
+        AuthUserRequestDto requestUser = gson.fromJson(jsonData, AuthUserRequestDto.class);
 
         try {
-            User outputUser = dbManager.getUsersDao().authByLoginAndPassword(inputUser.getLogin(), inputUser.getPassword());
+            User outputUser = dbManager.getUsersDao().authByLoginAndPassword(requestUser.getLogin(), requestUser.getPassword());
 
             dbManager.getUsersDao().setUserIsOnline(outputUser);
             outputUser.setOnline(true);
 
-            String outputUserJson = gson.toJson(outputUser);
+//            AuthUserResponseDto responseUser = AuthUserResponseDto.builder()
+//                    .id(outputUser.getId())
+//                    .nickname(outputUser.getNickname())
+//                    .build();
+
+            AuthUserResponseDto responseUser = modelMapper.map(outputUser, AuthUserResponseDto.class);
+
+            String outputUserJson = gson.toJson(responseUser);
 
             return Response.builder()
                     .status(NetStatuses.OK)
@@ -49,19 +60,23 @@ public class UsersService {
     }
 
     public Response processRegisterUser(String jsonData) throws Exception {
-        User user = gson.fromJson(jsonData, User.class);
+        RegisterUserRequestDto requestUser = gson.fromJson(jsonData, RegisterUserRequestDto.class);
 
         try {
-            boolean isContain = dbManager.getUsersDao().isContainLogin(user.getLogin());
+            boolean isContain = dbManager.getUsersDao().isContainLogin(requestUser.getLogin());
 
             if (isContain) {
                 throw new Exception("Пользователь с таким логином уже существует");
             }
 
-            user.setOnline(true);
-            dbManager.getUsersDao().registerNewUser(user);
+            User registerUser = modelMapper.map(requestUser, User.class);
 
-            String outputUserJson = gson.toJson(user);
+            registerUser.setOnline(true);
+            dbManager.getUsersDao().registerNewUser(registerUser);
+
+            AuthUserResponseDto responseUser = modelMapper.map(registerUser, AuthUserResponseDto.class);
+
+            String outputUserJson = gson.toJson(responseUser);
 
             return Response.builder()
                     .status(NetStatuses.OK)
@@ -81,10 +96,11 @@ public class UsersService {
     }
 
     public Response processDisconnectUser(String jsonData) throws Exception {
-        User user = gson.fromJson(jsonData, User.class);
+        DisconnectUserRequestDto requestUser = gson.fromJson(jsonData, DisconnectUserRequestDto.class);
 
         try {
-            dbManager.getUsersDao().setUserIsOffline(user);
+            User disconnectUser = modelMapper.map(requestUser, User.class);
+            dbManager.getUsersDao().setUserIsOffline(disconnectUser);
 
             return Response.builder()
                     .status(NetStatuses.OK)
@@ -103,12 +119,17 @@ public class UsersService {
     }
 
     public Response processGetAllUsersWithoutMe(String jsonData) {
-        User user = gson.fromJson(jsonData, User.class);
+        UsersWithoutMeRequestDto requestUser = gson.fromJson(jsonData, UsersWithoutMeRequestDto.class);
 
         try {
-            List<User> users = dbManager.getUsersDao().getAllUsersWithoutMe(user);
+            User getUser = modelMapper.map(requestUser, User.class);
+            List<User> users = dbManager.getUsersDao().getAllUsersWithoutMe(getUser);
 
-            String outputUsersJson = gson.toJson(users);
+            List<UsersWithoutMeResponseDto> responseUsers = users.stream().map(
+                    user -> modelMapper.map(user, UsersWithoutMeResponseDto.class)
+            ).collect(Collectors.toList());
+
+            String outputUsersJson = gson.toJson(responseUsers);
 
             return Response.builder()
                     .status(NetStatuses.OK)
